@@ -1,4 +1,5 @@
 using ControllerManagement.Data;
+using ControllerManagement.Service;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +13,7 @@ string connection = builder.Configuration.GetConnectionString("DefaultConnection
 builder.Services.AddDbContext<ControllerManagementContext>(options => options.UseSqlServer(connection));
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ControllerManagementContext>();
 builder.Services.AddAuthorization();
+builder.Services.AddTransient<IControllerService, ControllerService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

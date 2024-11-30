@@ -25,10 +25,7 @@ namespace ControllerManagement.Data.Migrations
             modelBuilder.Entity("ControllerManagement.Data.Controller", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Parameters")
                         .IsRequired()

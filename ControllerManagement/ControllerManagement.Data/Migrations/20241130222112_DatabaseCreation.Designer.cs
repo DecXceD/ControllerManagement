@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ControllerManagement.Data.Migrations
 {
     [DbContext(typeof(ControllerManagementContext))]
-    [Migration("20241102205315_DatabaseCreation")]
+    [Migration("20241130222112_DatabaseCreation")]
     partial class DatabaseCreation
     {
         /// <inheritdoc />
@@ -28,10 +28,7 @@ namespace ControllerManagement.Data.Migrations
             modelBuilder.Entity("ControllerManagement.Data.Controller", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Parameters")
                         .IsRequired()

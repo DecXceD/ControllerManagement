@@ -19,7 +19,7 @@ namespace ControllerManagement.Service
 
         void DeleteParameter(int id, string name);
 
-        void AddController();
+        int AddController();
 
         void DeleteController(int id);
 

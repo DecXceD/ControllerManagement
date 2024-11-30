@@ -9,15 +9,33 @@ namespace ControllerManagement.Service
         public ControllerService(ControllerManagementContext database)
         {
             this.database = database;
+            ids = database.Controllers.Select(c => c.Id).ToHashSet();
         }
 
         private ControllerManagementContext database;
+        private HashSet<int> ids;
 
-        public void AddController()
+        public int AddController()
         {
+            int id = 1;
+            while (ids.Contains(id))
+            {
+                id++;
+            }
             Controller controller = new Controller();
+            controller.Id = id;
             database.Controllers.Add(controller);
             database.SaveChanges();
+            ids.Add(id);
+            return controller.Id;
+        }
+
+        public void DeleteController(int id)
+        {
+            Controller controller = GetController(id);
+            database.Controllers.Remove(controller);
+            database.SaveChanges();
+            ids.Remove(id);
         }
 
         public void AddParameter(int id, string name, object value)
@@ -29,12 +47,6 @@ namespace ControllerManagement.Service
             database.SaveChanges();
         }
 
-        public void DeleteController(int id)
-        {
-            Controller controller = GetController(id);
-            database.Controllers.Remove(controller);
-            database.SaveChanges();
-        }
 
         public void DeleteParameter(int id, string name)
         {
@@ -66,15 +78,16 @@ namespace ControllerManagement.Service
             database.SaveChanges();
         }
 
+        public void UpdateParameter(int id, string name, object value)
+        {
+            AddParameter(id, name, value);
+        }
+
         public List<string> ShowAllControllers()
         {
             return database.Controllers.Select(c => $"Controller {c.Id}").ToList();
         }
 
-        public void UpdateParameter(int id, string name, object value)
-        {
-            AddParameter(id, name, value);
-        }
 
         public Controller GetController(int id) => database.Controllers.Find(id) ?? throw new ArgumentException("Invalid controller id");
     }

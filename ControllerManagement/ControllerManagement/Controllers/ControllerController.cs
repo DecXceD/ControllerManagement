@@ -22,35 +22,74 @@ namespace ControllerManagement.Controllers
         [HttpGet]
         public IEnumerable<string> ShowAllControllers()
         {
-            List<string> allControllers = service.ShowAllControllers();
-            return allControllers;
+            return service.ShowAllControllers();
         }
 
         // GET api/<ControllerController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public ActionResult<Data.Controller> GetController(int id)
         {
-            return "value";
+            try
+            {
+                return service.GetController(id);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         // POST api/<ControllerController>
         [Route("AddController")]
         [HttpPost]
-        public void AddController()
+        public int AddController()
         {
-            service.AddController();
+            return service.AddController();
         }
 
-        // PUT api/<ControllerController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [Route("AddParameter/{id}")]
+        [HttpPatch]
+        public ActionResult AddParameter(int id, string name, [FromBody]object value)
         {
+            try
+            {
+                service.AddParameter(id, name, value);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         // DELETE api/<ControllerController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public ActionResult DeleteController(int id)
         {
+            try
+            {
+                service.DeleteController(id);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [Route("DeleteParameter/{id}")]
+        [HttpPatch]
+        public ActionResult DeleteParameter(int id, string name)
+        {
+            try
+            {
+                service.DeleteParameter(id, name);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

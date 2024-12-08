@@ -1,5 +1,4 @@
-﻿using ControllerManagement.Data;
-using ControllerManagement.Service;
+﻿using ControllerManagement.Service;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,7 +9,7 @@ namespace ControllerManagement.Controllers
     [ApiController]
     public class ControllerController : ControllerBase
     {
-        private IControllerService service;
+        private readonly IControllerService service;
 
         public ControllerController(IControllerService service)
         {
@@ -84,6 +83,36 @@ namespace ControllerManagement.Controllers
             try
             {
                 service.DeleteParameter(id, name);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [Route("UpdateParameter/{id}")]
+        [HttpPatch]
+        public ActionResult UpdateParameter(int id, string name, object value)
+        {
+            try
+            {
+                service.UpdateParameter(id, name, value);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [Route("ReplaceParameter/{id}")]
+        [HttpPatch]
+        public ActionResult ReplaceParameter(int id, string name, string newName)
+        {
+            try
+            {
+                service.ReplaceParameter(id, name, newName);
                 return Ok();
             }
             catch (ArgumentException ex)

@@ -12,8 +12,8 @@ namespace ControllerManagement.Service
             ids = database.Controllers.Select(c => c.Id).ToHashSet();
         }
 
-        private ControllerManagementContext database;
-        private HashSet<int> ids;
+        private readonly ControllerManagementContext database;
+        private readonly HashSet<int> ids;
 
         public int AddController()
         {

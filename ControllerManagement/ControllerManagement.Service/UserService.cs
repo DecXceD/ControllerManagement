@@ -10,14 +10,14 @@ namespace ControllerManagement.Service
 {
     public class UserService : IUserService
     {
+        private readonly IConfiguration configuration;
+        private readonly UserManager<IdentityUser> userManager;
+
         public UserService(IConfiguration configuration, UserManager<IdentityUser> userManager)
         {
             this.configuration = configuration;
             this.userManager = userManager;
         }
-
-        private readonly IConfiguration configuration;
-        private readonly UserManager<IdentityUser> userManager;
 
         public void AddUser(string username, string password)
         {
@@ -26,7 +26,13 @@ namespace ControllerManagement.Service
                 UserName = username,
             };
             
-            userManager.CreateAsync(user, password).Wait();
+            var task = userManager.CreateAsync(user, password);
+            task.Wait();
+
+            if(!task.Result.Succeeded)
+            {
+                throw new ApplicationException(task.Result.Errors.First().Description);
+            }
         }
 
         public IdentityUser? Authenticate(string username, string password)

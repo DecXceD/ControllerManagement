@@ -12,11 +12,13 @@ namespace ControllerManagement.Service
     {
         private readonly IConfiguration configuration;
         private readonly UserManager<IdentityUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
 
-        public UserService(IConfiguration configuration, UserManager<IdentityUser> userManager)
+        public UserService(IConfiguration configuration, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             this.configuration = configuration;
             this.userManager = userManager;
+            this.roleManager = roleManager;
         }
 
         public void AddUser(string username, string password)
@@ -33,6 +35,14 @@ namespace ControllerManagement.Service
             {
                 throw new ApplicationException(task.Result.Errors.First().Description);
             }
+
+            if (!roleManager.RoleExistsAsync(UserRoles.User).Result)
+            {
+                roleManager.CreateAsync(new IdentityRole(UserRoles.User)).Wait();
+            }
+
+            userManager.AddToRoleAsync(user, UserRoles.User).Wait();
+
         }
 
         public IdentityUser? Authenticate(string username, string password)
@@ -54,11 +64,17 @@ namespace ControllerManagement.Service
 
         public string GenerateJSONWebToken(IdentityUser user)
         {
+            var userRoles = userManager.GetRolesAsync(user).Result;
             var authClaims = new List<Claim>
             {
                 new (ClaimTypes.Name, user.UserName!),
                 new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
+
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
 
             string jwtSecret = this.configuration["JWT:Secret"]!;
             byte[] jwtSecretBytes = Encoding.UTF8.GetBytes(jwtSecret);
@@ -75,6 +91,25 @@ namespace ControllerManagement.Service
         public List<string> GetUsers()
         {
             return userManager.Users.Select(x => x.UserName!).ToList();
+        }
+
+        public void AddPersonToRole(string username, string role)
+        {
+            var user = userManager.FindByNameAsync(username).Result ?? throw new ArgumentException("Wrong username");
+
+            if (role != UserRoles.User && role != UserRoles.Worker && role != UserRoles.Admin)
+            {
+                throw new ArgumentException("Invalid role");
+            }
+
+            if (!roleManager.RoleExistsAsync(role).Result)
+            {
+                roleManager.CreateAsync(new IdentityRole(role)).Wait();
+            }
+
+            IList<string> roleList = userManager.GetRolesAsync(user).Result;
+            userManager.RemoveFromRolesAsync(user, roleList).Wait();
+            userManager.AddToRoleAsync(user, role).Wait();
         }
     }
 }

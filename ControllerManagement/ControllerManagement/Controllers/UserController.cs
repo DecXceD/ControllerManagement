@@ -50,5 +50,32 @@ namespace ControllerManagement.Controllers
                 return NotFound(ex.Message);
             }
         }
+
+        [HttpPost("AddPersonToRole")]
+        public  ActionResult AddPersonToRole(string username, string role)
+        {
+            try
+            {
+                userService.AddPersonToRole(username, role);
+                return Ok();
+            }
+            catch(ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("Login")]
+        public ActionResult Login(string username, string password)
+        {
+            var user = this.userService.Authenticate(username, password);
+            if (user == null)
+            {
+                return BadRequest(new { message = "Username or password is incorrect." });
+            }
+
+            var tokenString = this.userService.GenerateJSONWebToken(user);
+            return Ok(new { token = tokenString });
+        }
     }
 }

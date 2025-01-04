@@ -10,6 +10,8 @@ namespace ControllerManagement.Service
 
         List<string> GetUsers();
 
+        void AddPersonToRole(string username, string role);
+
         IdentityUser? Authenticate(string username, string password);
 
         string GenerateJSONWebToken(IdentityUser user);

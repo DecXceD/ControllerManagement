@@ -1,4 +1,5 @@
 ﻿using ControllerManagement.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ControllerManagement.Controllers
@@ -16,6 +17,7 @@ namespace ControllerManagement.Controllers
 
         [Route("GetUsers")]
         [HttpGet]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public ActionResult<IEnumerable<string>> GetUsers()
         {
             return userService.GetUsers();
@@ -23,6 +25,7 @@ namespace ControllerManagement.Controllers
 
         [Route("AddUser")]
         [HttpPost]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public ActionResult AddUser(string username, string password)
         {
             try
@@ -38,6 +41,7 @@ namespace ControllerManagement.Controllers
 
         [Route("DeleteUser")]
         [HttpDelete]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public ActionResult DeleteUser(string username)
         {
             try
@@ -52,6 +56,7 @@ namespace ControllerManagement.Controllers
         }
 
         [HttpPost("AddPersonToRole")]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public  ActionResult AddPersonToRole(string username, string role)
         {
             try

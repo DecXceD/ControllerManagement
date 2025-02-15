@@ -1,49 +1,56 @@
-﻿Console.WriteLine("Controller Management App");
-Console.WriteLine("Available commands:");
-Console.WriteLine("Login");
-Console.WriteLine("Logout");
-Console.WriteLine("Show Controllers");
-Console.WriteLine("Exit");
-string command = Console.ReadLine();
-switch(command){
-    case "Login":
-        await LoginAsync();
-        break;
+﻿using ConsoleManagementApp;
 
-    case "Logout":
-        Logout();
-        break;
+ControllerMenu controllerMenu = new ControllerMenu();
 
-    case "Show Controllers":
-        ShowControllers();
-        break;
-
-    case "Exit":
-        return;
-
-    default:
-        Console.WriteLine("Invalid Command");
-        break;
-}
-static async Task LoginAsync()
+while (true)
 {
-    Console.WriteLine("Enter Username:");
-    string username = Console.ReadLine();
-    Console.WriteLine("Enter Password:");
-    string password = Console.ReadLine();
-    HttpClient client = new HttpClient();
+    Console.WriteLine("Controller Management App");
+    Console.WriteLine("Available commands:");
+    Console.WriteLine("Login");
+    Console.WriteLine("Logout");
+    Console.WriteLine("ShowControllers");
+    Console.WriteLine("Edit");
+    Console.WriteLine("Exit");
 
-    var response = await client.PostAsync($"https://localhost:44340/api/User/Login?username={username}&password={password}", null);
-    var content = await response.Content.ReadAsStringAsync();
-    Console.WriteLine(content);
+    string[] command = Console.ReadLine().Split();
+    switch (command[0])
+    {
+        case "Login":
+            await controllerMenu.LoginAsync();
+            break;
+
+        case "Logout":
+            controllerMenu.Logout();
+            break;
+
+        case "ShowControllers":
+            await controllerMenu.ShowControllersAsync();
+            break;
+
+        case "Edit":
+            if (!controllerMenu.IsWorker() && !controllerMenu.IsAdmin())
+            {
+                Console.WriteLine("You don't have permissions for that action");
+                break;
+            }
+
+            int id;
+
+            if (command.Length < 2 || !int.TryParse(command[1], out id))
+            {
+                Console.WriteLine("Invalid controller id");
+                break;
+            }
+            await controllerMenu.Edit(id);
+            break;
+
+        case "Exit":
+            return;
+
+        default:
+            Console.WriteLine("Invalid Command");
+            break;
+    }
 }
 
-static void Logout()
-{
 
-}
-
-static void ShowControllers()
-{
-
-}

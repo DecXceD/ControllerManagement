@@ -74,13 +74,22 @@ namespace ControllerManagement.Service
             object value = parameterDictionary[name];
             parameterDictionary.Remove(name);
             parameterDictionary.Add(newName, value);
-            controller.Parameters = JsonSerializer.Serialize(value);
+            controller.Parameters = JsonSerializer.Serialize(parameterDictionary);
             database.SaveChanges();
         }
 
         public void UpdateParameter(int id, string name, object value)
         {
-            AddParameter(id, name, value);
+            Controller controller = GetController(id);
+            var parameterDictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(controller.Parameters);
+            if (parameterDictionary == null || !parameterDictionary.ContainsKey(name))
+            {
+                throw new ArgumentException("Parameter not found");
+            }
+
+            parameterDictionary[name] = value;
+            controller.Parameters = JsonSerializer.Serialize(parameterDictionary);
+            database.SaveChanges();
         }
 
         public List<string> ShowAllControllers()

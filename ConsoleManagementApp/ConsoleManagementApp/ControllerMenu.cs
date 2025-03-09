@@ -167,7 +167,7 @@ namespace ConsoleManagementApp
             var httpContent = new StringContent(value, Encoding.UTF8, "application/json");
             var response = await client.PatchAsync($"Controller/UpdateParameter/{id}?name={name}", httpContent);
 
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine($"Parameter updated");
                 await ShowControllerAsync(id);
@@ -182,7 +182,7 @@ namespace ConsoleManagementApp
         {
             var response = await client.PatchAsync($"Controller/ReplaceParameter/{id}?name={name}&newName={newName}", null);
 
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine($"Parameter replaced");
                 await ShowControllerAsync(id);
@@ -198,7 +198,7 @@ namespace ConsoleManagementApp
             var httpContent = new StringContent(value, Encoding.UTF8, "application/json");
             var response = await client.PatchAsync($"Controller/AddParameter/{id}?name={name}", httpContent);
 
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine($"Parameter added");
                 await ShowControllerAsync(id);
@@ -213,7 +213,7 @@ namespace ConsoleManagementApp
         {
             var response = await client.PatchAsync($"Controller/DeleteParameter/{id}?name={name}", null);
 
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine($"Parameter deleted");
                 await ShowControllerAsync(id);
@@ -228,7 +228,7 @@ namespace ConsoleManagementApp
         {
             var response = await client.GetAsync($"User/GetUsers/");
 
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();           
                 List<string>? result = JsonSerializer.Deserialize<List<string>>(content);
@@ -255,7 +255,7 @@ namespace ConsoleManagementApp
 
                 response = await client.PostAsync($"User/AddPersonToRole?username={username}&role={role}", null);
                 
-                if (response.StatusCode != HttpStatusCode.OK)
+                if (response.IsSuccessStatusCode)
                 {
                     Console.WriteLine("Invalid role");
                 }
@@ -263,6 +263,20 @@ namespace ConsoleManagementApp
             else
             {
                 Console.WriteLine("Couldn't add user");
+            }
+        }
+
+        public async Task DeleteUserAsync(string username)
+        {
+            var response = await client.DeleteAsync($"User/DeleteUser?username={username}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("User deleted");
+            }
+            else
+            {
+                Console.WriteLine("Couldn't delete user");
             }
         }
     }

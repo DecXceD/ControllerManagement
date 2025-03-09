@@ -293,5 +293,19 @@ namespace ConsoleManagementApp
                 Console.WriteLine("Unknown error");
             }
         }
+
+        public async Task DeleteControllerAsync(int id)
+        {
+            var response = await client.DeleteAsync($"Controller/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Controller deleted");
+            }
+            else
+            {
+                Console.WriteLine("Invalid id");
+            }
+        }
     }
 }

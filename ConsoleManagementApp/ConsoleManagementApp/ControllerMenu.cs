@@ -279,5 +279,19 @@ namespace ConsoleManagementApp
                 Console.WriteLine("Couldn't delete user");
             }
         }
+
+        public async Task AddControllerAsync()
+        {
+            var response = await client.PostAsync($"Controller/AddController", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Controller added");
+            }
+            else
+            {
+                Console.WriteLine("Unknown error");
+            }
+        }
     }
 }

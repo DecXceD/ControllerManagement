@@ -14,6 +14,7 @@ while (true)
         Console.WriteLine("ShowUsers");
         Console.WriteLine("AddUser");
         Console.WriteLine("DeleteUser");
+        Console.WriteLine("AddController");
     }
     Console.WriteLine("Edit");
     Console.WriteLine("Exit");
@@ -71,6 +72,15 @@ while (true)
                 break;
             }
             await controllerMenu.DeleteUserAsync(command[1]);
+            break;
+
+        case "AddController":
+            if (!controllerMenu.IsAdmin())
+            {
+                Console.WriteLine("You don't have permissions for that action");
+                break;
+            }
+            await controllerMenu.AddControllerAsync();
             break;
 
         case "Edit":

@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Json;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -79,7 +80,7 @@ namespace ConsoleManagementApp
             }
         }
 
-        public async Task Edit(int controllerNumber)
+        public async Task EditAsync(int controllerNumber)
         {
             Console.WriteLine("Update {parameter} {value}");
 
@@ -98,7 +99,7 @@ namespace ConsoleManagementApp
                 case "Update":
                     if (IsWorker() || IsAdmin())
                     {
-                        await UpdateParameter(controllerNumber, command[1], command[2]);
+                        await UpdateParameterAsync(controllerNumber, command[1], command[2]);
                     }
                     else
                     {
@@ -109,7 +110,7 @@ namespace ConsoleManagementApp
                 case "Replace":
                     if (IsAdmin())
                     {
-                        await ReplaceParameter(controllerNumber, command[1], command[2]);
+                        await ReplaceParameterAsync(controllerNumber, command[1], command[2]);
                     }
                     else
                     {
@@ -120,7 +121,7 @@ namespace ConsoleManagementApp
                 case "Add":
                     if (IsAdmin())
                     {
-                        await AddParameter(controllerNumber, command[1], command[2]);
+                        await AddParameterAsync(controllerNumber, command[1], command[2]);
                     }
                     else
                     {
@@ -131,7 +132,7 @@ namespace ConsoleManagementApp
                 case "Delete":
                     if (IsAdmin())
                     {
-                        await DeleteParameter(controllerNumber, command[1]);
+                        await DeleteParameterAsync(controllerNumber, command[1]);
                     }
                     else
                     {
@@ -145,7 +146,7 @@ namespace ConsoleManagementApp
 
         }
 
-        public async Task ShowController(int id)
+        public async Task ShowControllerAsync(int id)
         {
             var response = await client.GetAsync($"Controller/{id}");
             Controller? content = await response.Content.ReadFromJsonAsync<Controller>();
@@ -160,7 +161,7 @@ namespace ConsoleManagementApp
             }
         }
 
-        public async Task UpdateParameter(int id, string name, string value)
+        public async Task UpdateParameterAsync(int id, string name, string value)
         {
             
             var httpContent = new StringContent(value, Encoding.UTF8, "application/json");
@@ -169,7 +170,7 @@ namespace ConsoleManagementApp
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 Console.WriteLine($"Parameter updated");
-                await ShowController(id);
+                await ShowControllerAsync(id);
             }
             else
             {
@@ -177,14 +178,14 @@ namespace ConsoleManagementApp
             }
         }
 
-        public async Task ReplaceParameter(int id, string name, string newName)
+        public async Task ReplaceParameterAsync(int id, string name, string newName)
         {
             var response = await client.PatchAsync($"Controller/ReplaceParameter/{id}?name={name}&newName={newName}", null);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 Console.WriteLine($"Parameter replaced");
-                await ShowController(id);
+                await ShowControllerAsync(id);
             }
             else
             {
@@ -192,7 +193,7 @@ namespace ConsoleManagementApp
             }
         }
 
-        public async Task AddParameter(int id, string name, string value)
+        public async Task AddParameterAsync(int id, string name, string value)
         {
             var httpContent = new StringContent(value, Encoding.UTF8, "application/json");
             var response = await client.PatchAsync($"Controller/AddParameter/{id}?name={name}", httpContent);
@@ -200,7 +201,7 @@ namespace ConsoleManagementApp
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 Console.WriteLine($"Parameter added");
-                await ShowController(id);
+                await ShowControllerAsync(id);
             }
             else
             {
@@ -208,18 +209,39 @@ namespace ConsoleManagementApp
             }
         }
 
-        public async Task DeleteParameter(int id, string name)
+        public async Task DeleteParameterAsync(int id, string name)
         {
             var response = await client.PatchAsync($"Controller/DeleteParameter/{id}?name={name}", null);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 Console.WriteLine($"Parameter deleted");
-                await ShowController(id);
+                await ShowControllerAsync(id);
             }
             else
             {
                 Console.WriteLine("Parameter not found");
+            }
+        }
+
+        public async Task ShowUsersAsync()
+        {
+            var response = await client.GetAsync($"User/GetUsers/");
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var content = await response.Content.ReadAsStringAsync();           
+                List<string>? result = JsonSerializer.Deserialize<List<string>>(content);
+                Console.WriteLine("Users:");
+
+                foreach(string user in result!)
+                {
+                    Console.WriteLine(user);
+                }
+            }
+            else
+            {
+                Console.WriteLine("You don't have permissions for the action");
             }
         }
     }

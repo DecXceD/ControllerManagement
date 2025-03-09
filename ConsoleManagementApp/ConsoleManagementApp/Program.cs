@@ -9,8 +9,13 @@ while (true)
     Console.WriteLine("Login");
     Console.WriteLine("Logout");
     Console.WriteLine("ShowControllers");
+    if (controllerMenu.IsAdmin())
+    {
+        Console.WriteLine("ShowUsers");
+    }
     Console.WriteLine("Edit");
     Console.WriteLine("Exit");
+    Console.WriteLine();
 
     string[] command = Console.ReadLine().Split();
     switch (command[0])
@@ -27,6 +32,10 @@ while (true)
             await controllerMenu.ShowControllersAsync();
             break;
 
+        case "ShowUsers":
+            await controllerMenu.ShowUsersAsync();
+            break;
+
         case "Edit":
             if (!controllerMenu.IsWorker() && !controllerMenu.IsAdmin())
             {
@@ -41,7 +50,7 @@ while (true)
                 Console.WriteLine("Invalid controller id");
                 break;
             }
-            await controllerMenu.Edit(id);
+            await controllerMenu.EditAsync(id);
             break;
 
         case "Exit":
@@ -51,6 +60,8 @@ while (true)
             Console.WriteLine("Invalid Command");
             break;
     }
+
+    Console.WriteLine();
 }
 
 

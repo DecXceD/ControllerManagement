@@ -12,10 +12,10 @@ while (true)
     if (controllerMenu.IsAdmin())
     {
         Console.WriteLine("ShowUsers");
-        Console.WriteLine("AddUser");
-        Console.WriteLine("DeleteUser");
+        Console.WriteLine("AddUser {username} {password} {role}");
+        Console.WriteLine("DeleteUser {username}");
         Console.WriteLine("AddController");
-        Console.WriteLine("DeleteController");
+        Console.WriteLine("DeleteController {id}");
     }
     Console.WriteLine("Edit");
     Console.WriteLine("Exit");

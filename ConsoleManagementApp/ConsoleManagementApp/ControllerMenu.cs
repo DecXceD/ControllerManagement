@@ -38,6 +38,13 @@ namespace ConsoleManagementApp
             string password = Console.ReadLine();
 
             var response = await client.PostAsync($"User/Login?username={username}&password={password}", null);
+
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                Console.WriteLine("Username or password is incorrect.");
+                return;
+            }
+
             var content = await response.Content.ReadAsStringAsync();
             var contentDict = JsonSerializer.Deserialize<Dictionary<string, string>>(content);
 
@@ -80,70 +87,79 @@ namespace ConsoleManagementApp
             }
         }
 
-        public async Task EditAsync(int controllerNumber)
+        public async Task EditAsync(int id)
         {
-            Console.WriteLine("Update {parameter} {value}");
-
-            if (IsAdmin())
+            while (true)
             {
-                Console.WriteLine("Replace {parameter} {new parameter}");
-                Console.WriteLine("Add {parameter} {value}");
-                Console.WriteLine("Delete {parameter}");
+                await ShowControllerAsync(id);
+
+                Console.WriteLine("Update {parameter} {value}");
+
+                if (IsAdmin())
+                {
+                    Console.WriteLine("Replace {parameter} {new parameter}");
+                    Console.WriteLine("Add {parameter} {value}");
+                    Console.WriteLine("Delete {parameter}");
+                }
+
+                Console.WriteLine("Return");
+                Console.WriteLine();
+
+                string[] command = Console.ReadLine().Split();
+                switch (command[0])
+                {
+                    case "Update":
+                        if (IsWorker() || IsAdmin())
+                        {
+                            await UpdateParameterAsync(id, command[1], command[2]);
+                        }
+                        else
+                        {
+                            Console.WriteLine("You don't have permissions for the action");
+                        }
+                        break;
+
+                    case "Replace":
+                        if (IsAdmin())
+                        {
+                            await ReplaceParameterAsync(id, command[1], command[2]);
+                        }
+                        else
+                        {
+                            Console.WriteLine("You don't have permissions for the action");
+                        }
+                        break;
+
+                    case "Add":
+                        if (IsAdmin())
+                        {
+                            await AddParameterAsync(id, command[1], command[2]);
+                        }
+                        else
+                        {
+                            Console.WriteLine("You don't have permissions for the action");
+                        }
+                        break;
+
+                    case "Delete":
+                        if (IsAdmin())
+                        {
+                            await DeleteParameterAsync(id, command[1]);
+                        }
+                        else
+                        {
+                            Console.WriteLine("You don't have permissions for the action");
+                        }
+                        break;
+
+                    case "Return":
+                        return;
+
+                    default:
+                        Console.WriteLine("Invalid Command");
+                        break;
+                }
             }
-
-            Console.WriteLine("Return");
-
-            string[] command = Console.ReadLine().Split();
-            switch (command[0])
-            {
-                case "Update":
-                    if (IsWorker() || IsAdmin())
-                    {
-                        await UpdateParameterAsync(controllerNumber, command[1], command[2]);
-                    }
-                    else
-                    {
-                        Console.WriteLine("You don't have permissions for the action");
-                    }
-                    break;
-
-                case "Replace":
-                    if (IsAdmin())
-                    {
-                        await ReplaceParameterAsync(controllerNumber, command[1], command[2]);
-                    }
-                    else
-                    {
-                        Console.WriteLine("You don't have permissions for the action");
-                    }
-                    break;
-
-                case "Add":
-                    if (IsAdmin())
-                    {
-                        await AddParameterAsync(controllerNumber, command[1], command[2]);
-                    }
-                    else
-                    {
-                        Console.WriteLine("You don't have permissions for the action");
-                    }
-                    break;
-
-                case "Delete":
-                    if (IsAdmin())
-                    {
-                        await DeleteParameterAsync(controllerNumber, command[1]);
-                    }
-                    else
-                    {
-                        Console.WriteLine("You don't have permissions for the action");
-                    }
-                    break;
-                default:
-                    Console.WriteLine("Invalid Command");
-                    break;
-            }
-
         }
 
         public async Task ShowControllerAsync(int id)
@@ -154,6 +170,7 @@ namespace ConsoleManagementApp
             if (content != null)
             {
                 content.Print();
+                Console.WriteLine();
             }
             else
             {

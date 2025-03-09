@@ -244,5 +244,26 @@ namespace ConsoleManagementApp
                 Console.WriteLine("You don't have permissions for the action");
             }
         }
+
+        public async Task AddUserAsync(string username, string password, string role)
+        {
+            var response = await client.PostAsync($"User/AddUser?username={username}&password={password}", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("User added");
+
+                response = await client.PostAsync($"User/AddPersonToRole?username={username}&role={role}", null);
+                
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    Console.WriteLine("Invalid role");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Couldn't add user");
+            }
+        }
     }
 }

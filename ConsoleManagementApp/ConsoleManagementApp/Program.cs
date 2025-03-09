@@ -12,6 +12,7 @@ while (true)
     if (controllerMenu.IsAdmin())
     {
         Console.WriteLine("ShowUsers");
+        Console.WriteLine("AddUser");
     }
     Console.WriteLine("Edit");
     Console.WriteLine("Exit");
@@ -33,7 +34,27 @@ while (true)
             break;
 
         case "ShowUsers":
+            if (!controllerMenu.IsAdmin())
+            {
+                Console.WriteLine("You don't have permissions for that action");
+                break;
+            }
             await controllerMenu.ShowUsersAsync();
+            break;
+
+        case "AddUser":
+            if (!controllerMenu.IsAdmin())
+            {
+                Console.WriteLine("You don't have permissions for that action");
+                break;
+            }
+
+            if (command.Length != 4)
+            {
+                Console.WriteLine("Invalid arguments");
+                break;
+            }
+            await controllerMenu.AddUserAsync(command[1], command[2], command[3]);
             break;
 
         case "Edit":

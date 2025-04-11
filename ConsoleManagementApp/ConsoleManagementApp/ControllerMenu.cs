@@ -97,7 +97,7 @@ namespace ConsoleManagementApp
 
                 if (IsAdmin())
                 {
-                    Console.WriteLine("Replace {parameter} {new parameter}");
+                    Console.WriteLine("Rename {parameter} {new parameter}");
                     Console.WriteLine("Add {parameter} {value}");
                     Console.WriteLine("Delete {parameter}");
                 }
@@ -119,10 +119,10 @@ namespace ConsoleManagementApp
                         }
                         break;
 
-                    case "Replace":
+                    case "Rename":
                         if (IsAdmin())
                         {
-                            await ReplaceParameterAsync(id, command[1], command[2]);
+                            await RenameParameterAsync(id, command[1], command[2]);
                         }
                         else
                         {
@@ -195,13 +195,13 @@ namespace ConsoleManagementApp
             }
         }
 
-        public async Task ReplaceParameterAsync(int id, string name, string newName)
+        public async Task RenameParameterAsync(int id, string name, string newName)
         {
-            var response = await client.PatchAsync($"Controller/ReplaceParameter/{id}?name={name}&newName={newName}", null);
+            var response = await client.PatchAsync($"Controller/RenameParameter/{id}?name={name}&newName={newName}", null);
 
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine($"Parameter replaced");
+                Console.WriteLine($"Parameter renamed");
                 await ShowControllerAsync(id);
             }
             else

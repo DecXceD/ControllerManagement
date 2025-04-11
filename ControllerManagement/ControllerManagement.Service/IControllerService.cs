@@ -6,11 +6,11 @@ namespace ControllerManagement.Service
     {
         List<string> ShowAllControllers();
 
-        void UpdateParameter(int id, string name, object value);
+        void UpdateParameter(int id, string name, double value);
 
-        void ReplaceParameter(int id, string name, string newName);
+        void RenameParameter(int id, string name, string newName);
 
-        void AddParameter(int id, string name, object value);
+        void AddParameter(int id, string name, Parameter value);
 
         void DeleteParameter(int id, string name);
 

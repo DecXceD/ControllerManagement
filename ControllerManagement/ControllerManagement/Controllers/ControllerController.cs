@@ -51,7 +51,7 @@ namespace ControllerManagement.Controllers
         [Route("AddParameter/{id}")]
         [HttpPatch]
         [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
-        public ActionResult AddParameter(int id, string name, [FromBody]object value)
+        public ActionResult AddParameter(int id, string name, [FromBody]Parameter value)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace ControllerManagement.Controllers
         [Route("UpdateParameter/{id}")]
         [HttpPatch]
         [Authorize(Roles = "Admin, Worker", AuthenticationSchemes = "Bearer")]
-        public ActionResult UpdateParameter(int id, string name, object value)
+        public ActionResult UpdateParameter(int id, string name, double value)
         {
             try
             {
@@ -112,14 +112,14 @@ namespace ControllerManagement.Controllers
             }
         }
 
-        [Route("ReplaceParameter/{id}")]
+        [Route("RenameParameter/{id}")]
         [HttpPatch]
         [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
-        public ActionResult ReplaceParameter(int id, string name, string newName)
+        public ActionResult RenameParameter(int id, string name, string newName)
         {
             try
             {
-                service.ReplaceParameter(id, name, newName);
+                service.RenameParameter(id, name, newName);
                 return Ok();
             }
             catch (ArgumentException ex)

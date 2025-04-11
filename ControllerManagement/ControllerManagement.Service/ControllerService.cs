@@ -38,11 +38,11 @@ namespace ControllerManagement.Service
             ids.Remove(id);
         }
 
-        public void AddParameter(int id, string name, object value)
+        public void AddParameter(int id, string name, Parameter parameter)
         {
             Controller controller = GetController(id);
-            var parameterDictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(controller.Parameters) ?? new Dictionary<string, object>();
-            parameterDictionary[name] = value;
+            var parameterDictionary = JsonSerializer.Deserialize<Dictionary<string, Parameter>>(controller.Parameters) ?? new Dictionary<string, Parameter>();
+            parameterDictionary[name] = parameter;
             controller.Parameters = JsonSerializer.Serialize(parameterDictionary);
             database.SaveChanges();
         }
@@ -51,10 +51,15 @@ namespace ControllerManagement.Service
         public void DeleteParameter(int id, string name)
         {
             Controller controller = GetController(id);
-            var parameterDictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(controller.Parameters);
+            var parameterDictionary = JsonSerializer.Deserialize<Dictionary<string, Parameter>>(controller.Parameters);
             if (parameterDictionary == null || !parameterDictionary.ContainsKey(name)) 
             {
                 throw new ArgumentException("Parameter not found");
+            }
+
+            if (parameterDictionary[name].IsConstant)
+            {
+                throw new InvalidOperationException("You can't delete a constant parameter");
             }
 
             parameterDictionary.Remove(name);
@@ -62,32 +67,42 @@ namespace ControllerManagement.Service
             database.SaveChanges();
         }
 
-        public void ReplaceParameter(int id, string name, string newName)
+        public void RenameParameter(int id, string name, string newName)
         {
             Controller controller = GetController(id);
-            var parameterDictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(controller.Parameters);
+            var parameterDictionary = JsonSerializer.Deserialize<Dictionary<string, Parameter>>(controller.Parameters);
             if (parameterDictionary == null || !parameterDictionary.ContainsKey(name))
             {
                 throw new ArgumentException("Parameter not found");
             }
 
-            object value = parameterDictionary[name];
+            if (parameterDictionary[name].IsConstant)
+            {
+                throw new InvalidOperationException("You can't replace a constant parameter");
+            }
+
+            Parameter value = parameterDictionary[name];
             parameterDictionary.Remove(name);
             parameterDictionary.Add(newName, value);
             controller.Parameters = JsonSerializer.Serialize(parameterDictionary);
             database.SaveChanges();
         }
 
-        public void UpdateParameter(int id, string name, object value)
+        public void UpdateParameter(int id, string name, double value)
         {
             Controller controller = GetController(id);
-            var parameterDictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(controller.Parameters);
+            var parameterDictionary = JsonSerializer.Deserialize<Dictionary<string, Parameter>>(controller.Parameters);
             if (parameterDictionary == null || !parameterDictionary.ContainsKey(name))
             {
                 throw new ArgumentException("Parameter not found");
             }
 
-            parameterDictionary[name] = value;
+            if (parameterDictionary[name].IsConstant)
+            {
+                throw new InvalidOperationException("You can't update a constant parameter");
+            }
+
+            parameterDictionary[name].Value = value;
             controller.Parameters = JsonSerializer.Serialize(parameterDictionary);
             database.SaveChanges();
         }

@@ -104,7 +104,7 @@ namespace ControllerManagement.Service
                 throw new ArgumentException("Parameter not found");
             }
 
-            if (value< parameterDictionary[name].MinValue || value > parameterDictionary[name].MaxValue)
+            if (value < parameterDictionary[name].MinValue || value > parameterDictionary[name].MaxValue)
             {
                 throw new ArgumentException("Out of range.");
             }

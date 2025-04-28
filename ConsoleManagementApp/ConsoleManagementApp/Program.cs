@@ -17,7 +17,7 @@ while (true)
         Console.WriteLine("AddController");
         Console.WriteLine("DeleteController {id}");
     }
-    Console.WriteLine("Edit");
+    Console.WriteLine("Edit {id}");
     Console.WriteLine("Exit");
     Console.WriteLine();
 

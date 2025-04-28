@@ -98,7 +98,7 @@ namespace ConsoleManagementApp
                 if (IsAdmin())
                 {
                     Console.WriteLine("Rename {parameter} {new parameter}");
-                    Console.WriteLine("Add {parameter} {value}");
+                    Console.WriteLine("Add {parameter}");
                     Console.WriteLine("Delete {parameter}");
                 }
 
@@ -133,7 +133,25 @@ namespace ConsoleManagementApp
                     case "Add":
                         if (IsAdmin())
                         {
-                            await AddParameterAsync(id, command[1], command[2]);
+                            Console.WriteLine("Enter id");
+                            int parameterId = int.Parse(Console.ReadLine());
+
+                            Console.WriteLine("Enter value");
+                            double value = double.Parse(Console.ReadLine());
+
+                            Console.WriteLine("Enter Min Value");
+                            double minValue = double.Parse(Console.ReadLine());
+
+                            Console.WriteLine("Enter Max Value");
+                            double maxValue = double.Parse(Console.ReadLine());
+
+                            Console.WriteLine("Is the parameter a constant? 0 = no, 1 = yes");
+                            bool isConstant = Console.ReadLine() == "1";
+
+                            Console.WriteLine("Is the parameter an integer? 0 = no, 1 = yes");
+                            bool isInt = Console.ReadLine() == "1";
+
+                            await AddParameterAsync(id, command[1], parameterId, value, minValue, maxValue, isConstant, isInt);
                         }
                         else
                         {
@@ -180,18 +198,16 @@ namespace ConsoleManagementApp
 
         public async Task UpdateParameterAsync(int id, string name, string value)
         {
-            
-            var httpContent = new StringContent(value, Encoding.UTF8, "application/json");
-            var response = await client.PatchAsync($"Controller/UpdateParameter/{id}?name={name}", httpContent);
+            var response = await client.PatchAsync($"Controller/UpdateParameter/{id}?name={name}&value={value}", null);
 
             if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine($"Parameter updated");
-                await ShowControllerAsync(id);
             }
-            else
+            else 
             {
-                Console.WriteLine("Parameter not found");
+                string errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(errorContent);
             }
         }
 
@@ -210,9 +226,19 @@ namespace ConsoleManagementApp
             }
         }
 
-        public async Task AddParameterAsync(int id, string name, string value)
+        public async Task AddParameterAsync(int id, string name, int parameterId, double value, double minValue, double maxValue, bool IsConstant, bool IsInt)
         {
-            var httpContent = new StringContent(value, Encoding.UTF8, "application/json");
+            string parameter = JsonSerializer.Serialize(new
+            {
+                id = parameterId,
+                value,
+                minValue,
+                maxValue,
+                IsConstant,
+                IsInt
+            });
+
+            var httpContent = new StringContent(parameter, Encoding.UTF8, "application/json");
             var response = await client.PatchAsync($"Controller/AddParameter/{id}?name={name}", httpContent);
 
             if (response.IsSuccessStatusCode)

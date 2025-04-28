@@ -1,4 +1,5 @@
 ﻿using ControllerManagement.Data;
+using System.Reflection.Metadata;
 using System.Text.Json;
 
 
@@ -40,6 +41,11 @@ namespace ControllerManagement.Service
 
         public void AddParameter(int id, string name, Parameter parameter)
         {
+            if (parameter.Value < parameter.MinValue || parameter.Value > parameter.MaxValue)
+            {
+                throw new ArgumentException("Out of range.");
+            }
+
             Controller controller = GetController(id);
             var parameterDictionary = JsonSerializer.Deserialize<Dictionary<string, Parameter>>(controller.Parameters) ?? new Dictionary<string, Parameter>();
             parameterDictionary[name] = parameter;
@@ -90,11 +96,17 @@ namespace ControllerManagement.Service
 
         public void UpdateParameter(int id, string name, double value)
         {
+
             Controller controller = GetController(id);
             var parameterDictionary = JsonSerializer.Deserialize<Dictionary<string, Parameter>>(controller.Parameters);
             if (parameterDictionary == null || !parameterDictionary.ContainsKey(name))
             {
                 throw new ArgumentException("Parameter not found");
+            }
+
+            if (value< parameterDictionary[name].MinValue || value > parameterDictionary[name].MaxValue)
+            {
+                throw new ArgumentException("Out of range.");
             }
 
             if (parameterDictionary[name].IsConstant)
@@ -114,5 +126,28 @@ namespace ControllerManagement.Service
 
 
         public Controller GetController(int id) => database.Controllers.Find(id) ?? throw new ArgumentException("Invalid controller id");
+
+        public void LoadParameter(int id, int parameterId, double value)
+        {
+            Controller controller = GetController(id);
+
+            var parameterDictionary = JsonSerializer.Deserialize<Dictionary<string, Parameter>>(controller.Parameters) 
+                ?? throw new ArgumentException("Parameter not found");
+            var parameter = parameterDictionary.Values.Single(p => p.Id == parameterId);
+
+            if (value < parameter.MinValue || value > parameter.MaxValue)
+            {
+                throw new ArgumentException("Out of range.");
+            }
+
+            if (parameter.IsConstant)
+            {
+                throw new InvalidOperationException("You can't update a constant parameter");
+            }
+
+            parameter.Value = value;
+            controller.Parameters = JsonSerializer.Serialize(parameterDictionary);
+            database.SaveChanges();
+        }
     }
 }

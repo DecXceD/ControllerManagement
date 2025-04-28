@@ -1,4 +1,4 @@
-﻿using ControllerManagement.Data;
+﻿using ControllerManagement.Service;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Sockets;
 using System.Text;
@@ -27,30 +27,21 @@ namespace ControllerManagement.BackgroundServices
 
                 try
                 {
-                    int[] numbers = received.Split(',').Select(int.Parse).ToArray();
-                    int virtualControllerId = numbers[0];
-                    int[] values = numbers.Skip(1).ToArray();
+                    double[] numbers = received.Split(',').Select(double.Parse).ToArray();
+                    int controllerId = (int)numbers[0];
+                    double[] values = numbers.Skip(1).ToArray();
 
                     using var scope = _scopeFactory.CreateScope();
-                    var db = scope.ServiceProvider.GetRequiredService<ControllerManagementContext>();
+                    var service = scope.ServiceProvider.GetRequiredService<IControllerService>();
 
-                    var controller = await db.Controllers
-                        .FirstOrDefaultAsync(vc => vc.Id == virtualControllerId);
-
-                    if (controller != null)
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        // Assuming the controller table has fixed columns like Value1, Value2, etc.
-                        //controller.Value1 = values.ElementAtOrDefault(0);
-                        //controller.Value2 = values.ElementAtOrDefault(1);
-                        //controller.Value3 = values.ElementAtOrDefault(2);
-                        // Continue as needed...
-
-                        await db.SaveChangesAsync();
+                        service.LoadParameter(controllerId, i, values[i]);
                     }
                 }
                 catch (Exception)
                 {
-                    
+                    return;
                 }
             }
         }

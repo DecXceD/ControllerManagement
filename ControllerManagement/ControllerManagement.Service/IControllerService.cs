@@ -19,5 +19,7 @@ namespace ControllerManagement.Service
         void DeleteController(int id);
 
         Controller GetController(int id);
+
+        void LoadParameter(int id, int parameterId, double value);
     }
 }

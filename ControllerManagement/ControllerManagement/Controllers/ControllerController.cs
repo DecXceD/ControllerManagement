@@ -42,7 +42,7 @@ namespace ControllerManagement.Controllers
         // POST api/<ControllerController>
         [Route("AddController")]
         [HttpPost]
-        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
+        //[Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public int AddController()
         {
             return service.AddController();
@@ -50,7 +50,7 @@ namespace ControllerManagement.Controllers
 
         [Route("AddParameter/{id}")]
         [HttpPatch]
-        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
+        //[Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public ActionResult AddParameter(int id, string name, [FromBody]Parameter value)
         {
             try
@@ -66,7 +66,7 @@ namespace ControllerManagement.Controllers
 
         // DELETE api/<ControllerController>/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
+        //[Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public ActionResult DeleteController(int id)
         {
             try
@@ -82,7 +82,7 @@ namespace ControllerManagement.Controllers
 
         [Route("DeleteParameter/{id}")]
         [HttpPatch]
-        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
+        //[Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public ActionResult DeleteParameter(int id, string name)
         {
             try
@@ -98,7 +98,7 @@ namespace ControllerManagement.Controllers
 
         [Route("UpdateParameter/{id}")]
         [HttpPatch]
-        [Authorize(Roles = "Admin, Worker", AuthenticationSchemes = "Bearer")]
+        //[Authorize(Roles = "Admin, Worker", AuthenticationSchemes = "Bearer")]
         public ActionResult UpdateParameter(int id, string name, double value)
         {
             try
@@ -114,7 +114,7 @@ namespace ControllerManagement.Controllers
 
         [Route("RenameParameter/{id}")]
         [HttpPatch]
-        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
+        //[Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public ActionResult RenameParameter(int id, string name, string newName)
         {
             try

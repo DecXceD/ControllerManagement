@@ -1,3 +1,4 @@
+using ControllerManagement.BackgroundServices;
 using ControllerManagement.Data;
 using ControllerManagement.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,7 +31,7 @@ builder.Services.AddAuthentication(options => {
 
 builder.Services.AddTransient<IControllerService, ControllerService>();
 builder.Services.AddTransient<IUserService, UserService>();
-
+builder.Services.AddHostedService<UdpListenerService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

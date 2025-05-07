@@ -17,13 +17,12 @@ namespace ControllerManagement.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _udpClient = new UdpClient(12345); // Use your desired port
+            _udpClient = new UdpClient(12345);
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 var result = await _udpClient.ReceiveAsync();
                 string received = Encoding.UTF8.GetString(result.Buffer);
-                //Processing information here:
 
                 try
                 {

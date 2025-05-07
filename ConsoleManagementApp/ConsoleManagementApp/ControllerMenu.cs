@@ -192,6 +192,7 @@ namespace ConsoleManagementApp
                 Controller? content = await response.Content.ReadFromJsonAsync<Controller>();
                 if (content != null)
                 {
+                    Console.WriteLine();
                     content.Print();
                     Console.WriteLine();
                 }

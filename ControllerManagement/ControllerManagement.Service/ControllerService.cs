@@ -48,6 +48,11 @@ namespace ControllerManagement.Service
 
             Controller controller = GetController(id);
             var parameterDictionary = JsonSerializer.Deserialize<Dictionary<string, Parameter>>(controller.Parameters) ?? new Dictionary<string, Parameter>();
+            if (parameterDictionary.Values.Any(p => p.Id == parameter.Id))
+            {
+                throw new ArgumentException("The parameter id already exists");
+            }
+
             parameterDictionary[name] = parameter;
             controller.Parameters = JsonSerializer.Serialize(parameterDictionary);
             database.SaveChanges();

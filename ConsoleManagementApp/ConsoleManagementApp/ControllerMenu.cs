@@ -91,7 +91,10 @@ namespace ConsoleManagementApp
         {
             while (true)
             {
-                await ShowControllerAsync(id);
+                if (await ShowControllerAsync(id) == false)
+                {
+                    break;
+                }
 
                 Console.WriteLine("Update {parameter} {value}");
 
@@ -180,20 +183,32 @@ namespace ConsoleManagementApp
             }
         }
 
-        public async Task ShowControllerAsync(int id)
+        public async Task<bool> ShowControllerAsync(int id)
         {
             var response = await client.GetAsync($"Controller/{id}");
-            Controller? content = await response.Content.ReadFromJsonAsync<Controller>();
 
-            if (content != null)
+            if (response.IsSuccessStatusCode)
             {
-                content.Print();
-                Console.WriteLine();
+                Controller? content = await response.Content.ReadFromJsonAsync<Controller>();
+                if (content != null)
+                {
+                    content.Print();
+                    Console.WriteLine();
+                }
+                else
+                {
+                    Console.WriteLine("Controller with that id doesn't exist");
+                    return false;
+                }
             }
             else
             {
-                Console.WriteLine("Controller not found");
+                string errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(errorContent);
+                return false;
             }
+
+            return true;
         }
 
         public async Task UpdateParameterAsync(int id, string name, string value)
@@ -222,7 +237,8 @@ namespace ConsoleManagementApp
             }
             else
             {
-                Console.WriteLine("Parameter not found");
+                string errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(errorContent);
             }
         }
 
@@ -248,7 +264,8 @@ namespace ConsoleManagementApp
             }
             else
             {
-                Console.WriteLine("Parameter not found");
+                string errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(errorContent);
             }
         }
 
@@ -263,7 +280,8 @@ namespace ConsoleManagementApp
             }
             else
             {
-                Console.WriteLine("Parameter not found");
+                string errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(errorContent);
             }
         }
 
